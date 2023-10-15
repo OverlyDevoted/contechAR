@@ -1,0 +1,14 @@
+{
+  "name": "launch-examples-threejs",
+  "private": false,
+  "license": "MIT",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "parcel src/index.html --https"
+  },
+  "dependencies": {
+    "parcel": "^2.10.0",
+    "three": "^0.153.0"
+  }
+}
