@@ -86,6 +86,9 @@ h1 {
   display: none;
 }
 
+#asset-status {
+  display: none;
+}
 
  #tracking-prompt > img {
   animation: circle 4s linear infinite;

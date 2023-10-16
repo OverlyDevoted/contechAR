@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
-import flowers from '../public/flowers.glb'
+import flowers from '../public/cube.glb'
 import "./style.css";
 console.log(flowers)
 let container;
@@ -31,6 +31,7 @@ function sessionStart() {
   planeFound = false;
   //show #tracking-prompt
   document.getElementById("tracking-prompt").style.display = "block";
+  document.getElementById("asset-status").style.display = "flex";
   document.getElementById("ar-not-supported").textContent = document.getElementById("ar-not-supported").textContent + " SessionStartiier";
   document.getElementById("app").style.display = "none";
 }
@@ -70,28 +71,28 @@ function init() {
   function onSelect() {
     if (reticle.visible && flowersGltf) {
       //pick random child from flowersGltf
-      const flower =
-        flowersGltf.children[
+      const flower = flowersGltf
+        /* flowersGltf.children[
           Math.floor(Math.random() * flowersGltf.children.length)
-        ];
+        ]; */
       const mesh = flower.clone();
 
       reticle.matrix.decompose(mesh.position, mesh.quaternion, mesh.scale);
-      const scale = Math.random() * 0.4 + 0.25;
-      mesh.scale.set(scale, scale, scale);
+      
+      mesh.scale.set(0.1, 0.1, 0.1);
       //random rotation
       mesh.rotateY(Math.random() * Math.PI * 2);
       scene.add(mesh);
 
       // animate growing via hacky setInterval then destroy it when fully grown
-      const interval = setInterval(() => {
+      /* const interval = setInterval(() => {
         mesh.scale.multiplyScalar(1.01);
 
         mesh.rotateY(0.03);
       }, 16);
       setTimeout(() => {
         clearInterval(interval);
-      }, 500);
+      }, 500); */
     }
   }
 
@@ -112,6 +113,7 @@ function init() {
 
   loader.load(flowers, (gltf) => {
     flowersGltf = gltf.scene;
+    document.getElementById("assets-loaded").value = "1"; 
   });
 
   window.addEventListener("resize", onWindowResize);
@@ -159,6 +161,7 @@ function render(timestamp, frame) {
           //hide #tracking-prompt
           document.getElementById("tracking-prompt").style.display = "none";
           document.getElementById("instructions").style.display = "flex";
+          
         }
         const hit = hitTestResults[0];
 
