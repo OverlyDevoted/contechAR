@@ -17,13 +17,18 @@ a {
   color: #ffffff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #777777;
 }
 
 body {
   margin: 0;
-  background-color: #242424;
+  background-color: #99D6E6;
+  background-image: url('./../public/props/gradient3.webp');
+  background-position-x: center;
+  background-size: auto 100dvh; 
+  color: #000000;
 }
 
 h1 {
@@ -31,20 +36,17 @@ h1 {
   line-height: 1.1;
 }
 
-#overlay{
+#overlay {
   display: flex;
   flex-direction: column;
   width: 100%;
   min-height: 80vh;
-  justify-content: center;
+  padding-top: 3rem;
   align-items: center;
 }
 
-#instructions{
-  margin: auto;
-  flex-grow: 1;
+#instructions {
   display: none;
-  margin-top: 3rem;
 }
 
 #app {
@@ -59,23 +61,33 @@ h1 {
   justify-content: center;
   margin: auto;
   text-align: center;
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 15;
-  
+
 }
 
 @keyframes circle {
-  from { transform: translateX(-50%) rotate(0deg) translateX(50px) rotate(0deg); }
-  to   { transform: translateX(-50%) rotate(360deg) translateX(50px) rotate(-360deg); }
+  from {
+    transform: translateX(-50%) rotate(0deg) translateX(50px) rotate(0deg);
+  }
+
+  to {
+    transform: translateX(-50%) rotate(360deg) translateX(50px) rotate(-360deg);
+  }
 }
 
 @keyframes elongate {
-  from { transform: translateX(100px); }
-  to   { transform: translateX(-100px); }
+  from {
+    transform: translateX(100px);
+  }
+
+  to {
+    transform: translateX(-100px);
+  }
 }
 
 #tracking-prompt {
@@ -88,20 +100,23 @@ h1 {
 
 #asset-status {
   display: none;
+  flex-direction: row;
+  align-items: center;
 }
 
- #tracking-prompt > img {
+#tracking-prompt>img {
   animation: circle 4s linear infinite;
 }
 
-#qr-code{
+#qr-code {
   border-radius: 0.5rem;
   box-shadow: 0 0 0 0.3rem rgba(0, 0, 0, 0.1), 0 0.3rem 0.6rem rgba(0, 0, 0, 0.2);
   margin-top: 2rem;
 }
 
 #ar-not-supported {
-  width:100%
+  width: 100%;
+  margin: 1em;
 }
 
 #variant-logo {
@@ -109,16 +124,16 @@ h1 {
 }
 
 canvas {
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
-  width:100%;
-  height:100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
   z-index: 1;
 }
 
-.xr-button-overlay{
+.xr-button-overlay {
   z-index: 100 !important;
 }

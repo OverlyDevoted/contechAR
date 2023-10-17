@@ -12,34 +12,42 @@
   <meta charset="UTF-8" />
   <link rel="icon" href="../public/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <!-- <meta name="description" content="Portable Random Orchestra">
+  <link rel="canonical" href="https://bouncing.band/">
+  <meta property="og:locale" content="en_GB">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Bouncing Band">
+  <meta property="og:description" content="Portable Random Orchestra">
+  <meta property="og:url" content="https://bouncing.band/">
+  <meta property="og:site_name" content="Bouncing Band">
+  <meta property="og:image" content="https://bouncing.band/og1.png">
+  <meta property="og:image:secure_url" content="https://bouncing.band/og1.png">
+  <meta property="og:image:width" content="1024">
+  <meta property="og:image:height" content="683">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:description" content="Portable Random Orchestra">
+  <meta name="twitter:title" content="Bouncing Band">
+  <meta name="twitter:site" content="@oiostudio">
+  <meta name="twitter:image" content="https://bouncing.band/og1.png">
+  <meta name="twitter:creator" content="@oiostudio"> -->
 </head>
 
 <body>
   <div id="overlay">
-    <div id="tracking-prompt"><img src="../public/hand.png" /></div>
+    <div style="position: absolute;" id="tracking-prompt"><img src="../public/hand.png" /></div>
     <div id="instructions">
-      <p>Tap to grow</p>
-    </div>
-    <div id="asset-status">
-      <label class="meter-label" for="">Asset progress</label>
-      <meter id="assets-loaded" min="0" max="1" value="0"></meter>
+      <p>Atributikai spustėlkite ant ekrano</p>
     </div>
   </div>
   <div id="app">
-    <p><img id="variant-logo" alt="WebXR on iOS"
-        src="./../public/favicon.ico" /></p>
-    <h2>Variant Launch ThreeJS Example</h2>
+    <img style="width: 50%; height: auto;" src="./../public/props/Contech_logo.webp" alt="CONTECH AR" />
     <div id="ar-not-supported">
       <p>
-        WebXR Not Supported. Open this page on iOS or Android to view the
-        example.
+        Šiame įrengineje WebXR nepalaikomas. 
+        Atidarykite šį tinklapį Android Chrome/Mozilla naršyklėje arba iOS Safari naršyklėje.
       </p>
-      <p>
-        For documentation & support, visit
-        <a href="https://launch.variant3d.com/docs">https://launch.variant3d.com</a>.
-      </p>
-      <img id="qr-code" />
     </div>
+    <p style="position: absolute; bottom: 5px;">Digital After-Life @ Vilnius 2023 💜</p>
   </div>
   <script type="module" src="./main.js"></script>
 </body>

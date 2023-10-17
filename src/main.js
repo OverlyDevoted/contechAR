@@ -1,7 +1,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
-import flowers from '../public/cube.glb'
+import flowers from '../public/models/test.fbx'
 import "./style.css";
 console.log(flowers)
 let container;
@@ -13,14 +14,16 @@ let reticle;
 let hitTestSource = null;
 let hitTestSourceRequested = false;
 let planeFound = false;
+let isLoaded = false;
 let flowersGltf;
+
 
 // check for webxr session support
 if ("xr" in navigator) {
   navigator.xr.isSessionSupported("immersive-ar").then((supported) => {
     if (supported) {
-      
-      document.getElementById("ar-not-supported").textContent = "Supported";
+
+      document.getElementById("ar-not-supported").textContent = "Aprašymas";
       init();
       animate();
     }
@@ -31,9 +34,17 @@ function sessionStart() {
   planeFound = false;
   //show #tracking-prompt
   document.getElementById("tracking-prompt").style.display = "block";
-  document.getElementById("asset-status").style.display = "flex";
-  document.getElementById("ar-not-supported").textContent = document.getElementById("ar-not-supported").textContent + " SessionStartiier";
   document.getElementById("app").style.display = "none";
+  const instructions = document.getElementById("instructions");
+  instructions.style.display = "flex";
+  instructions.textContent = "Vyksta aplinkos atpažinimas, judinkite telefoną"
+}
+function sessionEnd() {
+  planeFound = false;
+  //show #tracking-prompt
+  document.getElementById("tracking-prompt").style.display = "none";
+  document.getElementById("app").style.display = "flex";
+  document.getElementById("instructions").style.display = "none";
 }
 
 function init() {
@@ -60,8 +71,9 @@ function init() {
   container.appendChild(renderer.domElement);
 
   renderer.xr.addEventListener("sessionstart", sessionStart);
+  renderer.xr.addEventListener("sessionend", sessionEnd);
 
-  document.body.appendChild(
+  document.getElementById("app").appendChild(
     ARButton.createButton(renderer, {
       requiredFeatures: ["local", "hit-test", "dom-overlay"],
       domOverlay: { root: document.querySelector("#overlay") },
@@ -71,28 +83,29 @@ function init() {
   function onSelect() {
     if (reticle.visible && flowersGltf) {
       //pick random child from flowersGltf
+      console.log("Spawning model")
       const flower = flowersGltf
-        /* flowersGltf.children[
-          Math.floor(Math.random() * flowersGltf.children.length)
-        ]; */
+      /* flowersGltf.children[
+        Math.floor(Math.random() * flowersGltf.children.length)
+      ]; */
       const mesh = flower.clone();
-
-      reticle.matrix.decompose(mesh.position, mesh.quaternion, mesh.scale);
-      
-      mesh.scale.set(0.1, 0.1, 0.1);
+     
+      mesh.position.set(reticle.position)
+      const scale = 1;
+      mesh.scale.set(scale, scale, scale);
       //random rotation
       mesh.rotateY(Math.random() * Math.PI * 2);
       scene.add(mesh);
 
       // animate growing via hacky setInterval then destroy it when fully grown
-      /* const interval = setInterval(() => {
+      const interval = setInterval(() => {
         mesh.scale.multiplyScalar(1.01);
 
         mesh.rotateY(0.03);
       }, 16);
       setTimeout(() => {
         clearInterval(interval);
-      }, 500); */
+      }, 500);
     }
   }
 
@@ -109,11 +122,12 @@ function init() {
   scene.add(reticle);
 
   //load flowers.glb
-  const loader = new GLTFLoader();
+  const loader = new FBXLoader();
 
   loader.load(flowers, (gltf) => {
-    flowersGltf = gltf.scene;
-    document.getElementById("assets-loaded").value = "1"; 
+    flowersGltf = gltf;
+    isLoaded = true;
+    console.log("Loaded gltf " + flowersGltf? "actually" : "no")
   });
 
   window.addEventListener("resize", onWindowResize);
@@ -160,8 +174,7 @@ function render(timestamp, frame) {
           planeFound = true;
           //hide #tracking-prompt
           document.getElementById("tracking-prompt").style.display = "none";
-          document.getElementById("instructions").style.display = "flex";
-          
+          document.getElementById("instructions").textContent = "Atributikai spustelkite ant ekrano";
         }
         const hit = hitTestResults[0];
 
