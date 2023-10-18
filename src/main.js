@@ -1,12 +1,13 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
-import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
-import flowers from '../public/models/test.fbx'
+import { ARButton } from "./js/ARButton";
+import flowers from '../public/models/robot.gltf'
 import "./style.css";
 console.log(flowers)
 let container;
 let camera, scene, renderer;
+let mixer, clock;
 let controller;
 
 let reticle;
@@ -14,16 +15,15 @@ let reticle;
 let hitTestSource = null;
 let hitTestSourceRequested = false;
 let planeFound = false;
-let isLoaded = false;
-let flowersGltf;
 
-
+let modelGltf;
+let doCapture = false;
 // check for webxr session support
 if ("xr" in navigator) {
   navigator.xr.isSessionSupported("immersive-ar").then((supported) => {
     if (supported) {
 
-      document.getElementById("ar-not-supported").textContent = "Aprašymas";
+      document.getElementById("ar-not-supported").textContent = "";
       init();
       animate();
     }
@@ -37,7 +37,13 @@ function sessionStart() {
   document.getElementById("app").style.display = "none";
   const instructions = document.getElementById("instructions");
   instructions.style.display = "flex";
-  instructions.textContent = "Vyksta aplinkos atpažinimas, judinkite telefoną"
+  instructions.children[0].textContent = "Vyksta aplinkos atpažinimas, judinkite telefoną"
+
+  document.getElementById("screenshot-btn").addEventListener('click', capture)
+}
+function capture() {
+  console.log("Capture");
+  doCapture = true;
 }
 function sessionEnd() {
   planeFound = false;
@@ -45,6 +51,8 @@ function sessionEnd() {
   document.getElementById("tracking-prompt").style.display = "none";
   document.getElementById("app").style.display = "flex";
   document.getElementById("instructions").style.display = "none";
+
+  document.getElementById("screenshot-btn").removeEventListener('click', capture)
 }
 
 function init() {
@@ -73,7 +81,10 @@ function init() {
   renderer.xr.addEventListener("sessionstart", sessionStart);
   renderer.xr.addEventListener("sessionend", sessionEnd);
 
-  document.getElementById("app").appendChild(
+  clock = new THREE.Clock();
+
+
+  document.getElementById("ar-not-supported").appendChild(
     ARButton.createButton(renderer, {
       requiredFeatures: ["local", "hit-test", "dom-overlay"],
       domOverlay: { root: document.querySelector("#overlay") },
@@ -81,31 +92,17 @@ function init() {
   );
 
   function onSelect() {
-    if (reticle.visible && flowersGltf) {
+    if (reticle.visible && modelGltf) {
       //pick random child from flowersGltf
       console.log("Spawning model")
-      const flower = flowersGltf
-      /* flowersGltf.children[
-        Math.floor(Math.random() * flowersGltf.children.length)
-      ]; */
-      const mesh = flower.clone();
-     
-      mesh.position.set(reticle.position)
-      const scale = 1;
-      mesh.scale.set(scale, scale, scale);
-      //random rotation
-      mesh.rotateY(Math.random() * Math.PI * 2);
-      scene.add(mesh);
-
-      // animate growing via hacky setInterval then destroy it when fully grown
-      const interval = setInterval(() => {
-        mesh.scale.multiplyScalar(1.01);
-
-        mesh.rotateY(0.03);
-      }, 16);
-      setTimeout(() => {
-        clearInterval(interval);
-      }, 500);
+      const model = modelGltf.scene;
+      model.scale.setScalar(0.5)
+      reticle.matrix.decompose(model.position, model.quaternion, model.scale);
+      mixer = new THREE.AnimationMixer(model)
+      const clips = modelGltf.animations;
+      const action = mixer.clipAction(clips[0])
+      action.play()
+      scene.add(model);
     }
   }
 
@@ -122,12 +119,12 @@ function init() {
   scene.add(reticle);
 
   //load flowers.glb
-  const loader = new FBXLoader();
+  const loader = new GLTFLoader();
 
   loader.load(flowers, (gltf) => {
-    flowersGltf = gltf;
+    modelGltf = gltf;
     isLoaded = true;
-    console.log("Loaded gltf " + flowersGltf? "actually" : "no")
+    console.log("Loaded gltf " + (modelGltf ? "actually" : "no"))
   });
 
   window.addEventListener("resize", onWindowResize);
@@ -174,7 +171,7 @@ function render(timestamp, frame) {
           planeFound = true;
           //hide #tracking-prompt
           document.getElementById("tracking-prompt").style.display = "none";
-          document.getElementById("instructions").textContent = "Atributikai spustelkite ant ekrano";
+          document.getElementById("instructions").children[0].textContent = "Atributikai spustelkite ant ekrano";
         }
         const hit = hitTestResults[0];
 
@@ -185,6 +182,8 @@ function render(timestamp, frame) {
       }
     }
   }
-
+  if (mixer) {
+    mixer.update(clock.getDelta());
+  }
   renderer.render(scene, camera);
 }
